@@ -13,9 +13,9 @@ public interface TaskRepository {
     Optional<Task> findById(Integer i);
 
     boolean existsById(Integer id);
+
+    boolean existsByDoneIsFalseAndGroup_id(Integer groupId);
+    List<Task> findByDone(boolean done);
     Task save(Task entity);
-    List<Task> findByDone(@Param("state") boolean done);
-
-
    // Page<Task> findAll(org.springframework.data.domain.Pageable page);
 }

@@ -2,8 +2,8 @@ package io.gitub.mat3e.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.springframework.lang.NonNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
@@ -16,7 +16,12 @@ public class Task {
     @NotBlank(message = "Description cannot be null!")
     private String description;
     private boolean done;
-
+    private LocalDateTime deadline;
+    @Embedded
+    private Audit audit = new Audit();
+    @ManyToOne
+    @JoinColumn(name = "task_group_id")
+    private TaskGroup group;
     public Task() {
 
     }
@@ -25,7 +30,7 @@ public class Task {
         return id;
     }
 
-    public void setId(final int id) {
+    void setId(final int id) {
         this.id = id;
     }
 
@@ -38,12 +43,28 @@ public class Task {
     }
 
     @Column(name="done")
-    boolean isDone(){
+    public boolean isDone(){
         return done;
     }
 
-    void setDone(final boolean done){
+    public void setDone(final boolean done){
         this.done=done;
+    }
+
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadLine) {
+        this.deadline = deadLine;
+    }
+
+    public void updateFrom(final Task source){
+        description = source.description;
+        done=source.done;
+        deadline = source.deadline;
+        group = source.group;
+
     }
 
 

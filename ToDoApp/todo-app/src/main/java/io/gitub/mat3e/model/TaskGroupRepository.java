@@ -8,10 +8,7 @@ import java.util.Optional;
 
 public interface TaskGroupRepository {
     List<TaskGroup> findAll();
-    //Page<Task> findAll(Pageable page);
     Optional<TaskGroup> findById(Integer id);
-   // boolean existsById(Integer id);
-   // boolean existsByDoneIsFalseAndGroup_id(Integer groupId);
-   // List<Task> findByDone(boolean done);
     TaskGroup save(TaskGroup entity);
+    boolean existsByDoneIsFalseAndProject_Id(Integer projectId);
 }

@@ -30,7 +30,7 @@ class ProjectServiceTest {
         TaskGroupRepository mockGroupRepository = groupRepositoryReturning(true);
         TaskConfigurationProperties mockConfig = configurationReturning(false);
 
-        var toTest = new ProjectService(null, mockGroupRepository, mockConfig);
+        var toTest = new ProjectService(null, mockGroupRepository, service, mockConfig);
 
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
@@ -51,7 +51,7 @@ class ProjectServiceTest {
         when(mockRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, null, mockConfig);
+        var toTest = new ProjectService(mockRepository, null, service, mockConfig);
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
 
@@ -73,7 +73,7 @@ class ProjectServiceTest {
         TaskGroupRepository mockGroupRepository = groupRepositoryReturning(false);
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, null, mockConfig);
+        var toTest = new ProjectService(mockRepository, null, service, mockConfig);
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
 
@@ -98,7 +98,7 @@ class ProjectServiceTest {
         int countBeforeCall = inMemoryGroupRepo.count();
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, inMemoryGroupRepo, mockConfig);
+        var toTest = new ProjectService(mockRepository, inMemoryGroupRepo, service, mockConfig);
 
         GroupReadModel result = toTest.createGroup(today, 1);
 
@@ -111,8 +111,7 @@ class ProjectServiceTest {
         //assertThat(countBeforeCall+1).isNotEqualTo(inMemoryGroupRepo.count());
     }
 
-    private InMemoryGroupRepository inMemoryGroupRepository() {return new InMemoryGroupRepository();
-    }
+
     private Project projectWith(String projectDescription, Set<Integer> daysToDeadline){
 
 
@@ -144,7 +143,8 @@ class ProjectServiceTest {
         when(mockConfig.getTemplate()).thenReturn(mockTemplate);
         return mockConfig;
     }
-
+    private InMemoryGroupRepository inMemoryGroupRepository() {return new InMemoryGroupRepository();
+    }
     private static class InMemoryGroupRepository implements TaskGroupRepository {
         private int index = 0;
         private Map<Integer, TaskGroup> map = new HashMap<>();

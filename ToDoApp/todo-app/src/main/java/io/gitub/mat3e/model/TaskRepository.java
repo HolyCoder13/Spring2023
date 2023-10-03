@@ -18,5 +18,5 @@ public interface TaskRepository {
     List<Task> findByDone(boolean done);
     Task save(Task entity);
    // Page<Task> findAll(org.springframework.data.domain.Pageable page);
-    List<Task>findAllbyGroup_id(Integer groupId);
+    List<Task> findAllByGroup_Id(Integer groupId);
 }

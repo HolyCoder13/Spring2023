@@ -2,21 +2,27 @@ package io.gitub.mat3e.logic;
 
 
 import io.gitub.mat3e.TaskConfigurationProperties;
+import io.gitub.mat3e.model.Project;
 import io.gitub.mat3e.model.TaskGroup;
 import io.gitub.mat3e.model.TaskGroupRepository;
 import io.gitub.mat3e.model.TaskRepository;
 import io.gitub.mat3e.model.projection.GroupReadModel;
 import io.gitub.mat3e.model.projection.GroupWriteModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 //@Service
 //@RequestScope
 public class TaskGroupService {
+    private static final Logger logger = LoggerFactory.getLogger(TaskGroupService.class);
     private TaskGroupRepository repository;
     private TaskRepository taskRepository;
     public TaskGroupService(TaskGroupRepository repository, TaskRepository taskRepository) {
@@ -24,7 +30,10 @@ public class TaskGroupService {
         this.taskRepository = taskRepository;
     }
     public GroupReadModel createGroup(GroupWriteModel source){
-        TaskGroup result = repository.save(source.toGroup());
+        return createGroup(source,null);
+    }
+    public GroupReadModel createGroup(GroupWriteModel source, Project project) {
+        TaskGroup result = repository.save(source.toGroup(project));
         return new GroupReadModel(result);
     }
 
@@ -44,4 +53,12 @@ public class TaskGroupService {
     result.setDone(!result.isDone());
     repository.save(result);
     }
+
+    @Async
+    public CompletableFuture<List<TaskGroup>> findAllAsync(){
+        logger.info("Suply A-sync on TaskGroup");
+        return CompletableFuture.supplyAsync(repository::findAll);
+    }
+
+
 }

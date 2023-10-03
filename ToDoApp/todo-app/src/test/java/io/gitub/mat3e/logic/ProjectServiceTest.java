@@ -30,14 +30,14 @@ class ProjectServiceTest {
         TaskGroupRepository mockGroupRepository = groupRepositoryReturning(true);
         TaskConfigurationProperties mockConfig = configurationReturning(false);
 
-        var toTest = new ProjectService(null, mockGroupRepository, service, mockConfig);
+        var toTest = new ProjectService(null, mockGroupRepository, null, mockConfig);
 
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
 
         assertThat(exception)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("one undone group");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Only one undone group from project is allowed!");
 
 
     }
@@ -51,12 +51,12 @@ class ProjectServiceTest {
         when(mockRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, null, service, mockConfig);
+        var toTest = new ProjectService(mockRepository, null, null, mockConfig);
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
 
         assertThat(exception)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("id not found");
 
 
@@ -73,12 +73,12 @@ class ProjectServiceTest {
         TaskGroupRepository mockGroupRepository = groupRepositoryReturning(false);
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, null, service, mockConfig);
+        var toTest = new ProjectService(mockRepository, null, null, mockConfig);
 
         var exception = catchThrowable(() -> toTest.createGroup(LocalDateTime.now(), 0));
 
         assertThat(exception)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("id not found");
 
 
@@ -95,10 +95,11 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(project));
 
         InMemoryGroupRepository inMemoryGroupRepo = inMemoryGroupRepository();
+        var serviceWithInMemoryRepo = dummyGroupService(inMemoryGroupRepo);
         int countBeforeCall = inMemoryGroupRepo.count();
 
         TaskConfigurationProperties mockConfig = configurationReturning(true);
-        var toTest = new ProjectService(mockRepository, inMemoryGroupRepo, service, mockConfig);
+        var toTest = new ProjectService(mockRepository, inMemoryGroupRepo, serviceWithInMemoryRepo, mockConfig);
 
         GroupReadModel result = toTest.createGroup(today, 1);
 
@@ -109,6 +110,13 @@ class ProjectServiceTest {
                 .isEqualTo(inMemoryGroupRepo.count());
 
         //assertThat(countBeforeCall+1).isNotEqualTo(inMemoryGroupRepo.count());
+    }
+    private TaskGroupService dummyGroupService(final InMemoryGroupRepository inMemoryGroupRepo){
+        return new TaskGroupService(inMemoryGroupRepo,null);
+    }
+
+    private static TaskGroupService getServiceWithInMemoryRepo(InMemoryGroupRepository inMemoryGroupRepo) {
+        return new TaskGroupService(inMemoryGroupRepo, null);
     }
 
 

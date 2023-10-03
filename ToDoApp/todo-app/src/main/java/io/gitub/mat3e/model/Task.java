@@ -71,6 +71,13 @@ public class Task {
     public void setDeadline(LocalDateTime deadLine) {
         this.deadline = deadLine;
     }
+    TaskGroup getGroup() {
+        return group;
+    }
+
+    void setGroup(final TaskGroup group) {
+        this.group = group;
+    }
 
     public void updateFrom(final Task source){
         description = source.description;

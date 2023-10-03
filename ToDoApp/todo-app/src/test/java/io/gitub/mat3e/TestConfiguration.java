@@ -77,8 +77,10 @@ public class TestConfiguration {
                 return tasks.get(key);
             }
 
+
+
             @Override
-            public List<Task> findAllbyGroup_id(Integer groupId) {
+            public List<Task> findAllByGroup_Id(Integer groupId) {
                 return List.of();
             }
 

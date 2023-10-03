@@ -37,6 +37,9 @@ public class TaskGroup {
     public String getDescription() {
         return description;
     }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Column(name="done")
     public boolean isDone(){
@@ -54,16 +57,11 @@ public class TaskGroup {
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
-
     public Project getProject() {
         return project;
     }
-
     public void setProject(final Project project) {
         this.project = project;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

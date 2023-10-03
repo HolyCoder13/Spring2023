@@ -14,7 +14,7 @@ public class Project {
 
     @NotBlank(message = "Project step description cannot be empty!")
     private String description;
-
+    private int daysToDeadline;
     @OneToMany(mappedBy = "project")
     private Set<TaskGroup> groups;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
@@ -35,11 +35,11 @@ public class Project {
         return description;
     }
 
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    void setGroups(final Set<TaskGroup> groups){this.groups=groups;}
+    public void setGroups(final Set<TaskGroup> groups){this.groups=groups;}
 
     public Set<TaskGroup> getGroups() {
         return groups;
@@ -49,7 +49,15 @@ public class Project {
         return steps;
     }
 
-    void setSteps(Set<ProjectStep> steps) {
+    public int getDaysToDeadline() {
+        return daysToDeadline;
+    }
+
+    public void setDaysToDeadline(int daysToDeadline) {
+        this.daysToDeadline = daysToDeadline;
+    }
+
+    public void setSteps(Set<ProjectStep> steps) {
         this.steps = steps;
     }
 }

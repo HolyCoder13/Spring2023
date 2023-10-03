@@ -1,0 +1,1 @@
+alter table projects add days_to_deadline int null;

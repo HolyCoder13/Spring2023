@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/awsm.css/dist/awsm.min.css">
+    <style>
+        body{
+            background-color: #3498db;
+            /*width:100vw;*/
+            /*height:100vh;*/
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <!--/*@thymesVar id="message" type="java.lang.String"*/-->
+        <h1 th:if="${message != null }" th:text="${message}"></h1>
+        <!--/*@thymesVar id="project" type="io.gitub.mat3e.model.projection.ProjectWriteModel"*/-->
+        <form action="#" method="post" th:action="@{/projects}" th:object="${project}">
+            <fieldset>
+                <legend>New Project</legend>
+                <label>Description
+                <input type="text" th:field="*{description}"/>
+                </label>
+                <fieldset th:each="step,stepStat : *{steps}">
+                    <label th:text="|Step ${stepStat.index +1}|"></label>
+                    <label th:field="Description">
+                        <input type="text" th:field="*{steps[__${stepStat.index}__].description}"/>
+                    </label>
+                    <label>Days to deadline:
+                        <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}"/>
+                    </label>
+                </fieldset>
+                <div>
+                <button type="submit" name="addStep">+</button>
+            </div>
+            </fieldset>
+
+            <p>
+                <button type="submit">Add</button>
+                <button type="reset">Clear</button>
+            </p>
+        </form>
+    </main>
+    
+</body>
+</html>

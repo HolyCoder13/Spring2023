@@ -5,6 +5,7 @@ import io.gitub.mat3e.model.*;
 import io.gitub.mat3e.model.projection.GroupReadModel;
 import io.gitub.mat3e.model.projection.GroupTaskWriteModel;
 import io.gitub.mat3e.model.projection.GroupWriteModel;
+import io.gitub.mat3e.model.projection.ProjectWriteModel;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,8 +29,8 @@ public class ProjectService {
     public List<Project> readAll(){
         return repository.findAll();
     }
-    public Project save(Project toSave){
-        return repository.save(toSave);
+    public Project save(ProjectWriteModel toSave){
+        return repository.save(toSave.toProject());
     }
 
     public GroupReadModel createGroup(LocalDateTime deadline, int projectId){

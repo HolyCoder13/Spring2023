@@ -12,7 +12,9 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@RestController
+@Controller
 @RequestMapping("/groups")
 public class TaskGroupController {
     private final Logger logger = LoggerFactory.getLogger(TaskGroupController.class);
@@ -32,7 +34,8 @@ public class TaskGroupController {
         this.service = service;
     }
     //methods
-    @PostMapping
+    @ResponseBody
+    @PostMapping(produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GroupReadModel> createGroup(@RequestBody @Valid GroupWriteModel toCreate){
         GroupReadModel result = service.createGroup(toCreate);
         return ResponseEntity.created(URI.create("/"+result.getId())).body(result);
@@ -42,17 +45,19 @@ public class TaskGroupController {
 //        logger.warn("Exposing all the Task Groups!");
 //        return service.findAllAsync().thenApply(ResponseEntity::ok);
 //    }
-    @GetMapping
+    @ResponseStatus
+    @GetMapping(produces= MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<GroupReadModel>> readAllGroups(){
         logger.info("Exposing taskGroups");
         return  ResponseEntity.ok(service.readAll());
     }
-
+    @ResponseBody
     @GetMapping("/{id}")
     ResponseEntity<List<Task>> readAllTasksFromGroup(@PathVariable int id){
         return ResponseEntity.ok(repository.findAllByGroup_Id(id));
     }
     @Transactional
+    @ResponseBody
     @PatchMapping("/{id}")
     public ResponseEntity<?> toggleTaskGroup(@PathVariable int id){
         service.toggleGroup(id);

@@ -2,12 +2,14 @@ package io.gitub.mat3e.model.projection;
 
 import io.gitub.mat3e.model.Project;
 import io.gitub.mat3e.model.TaskGroup;
+import jakarta.validation.Valid;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GroupWriteModel {
     private String description;
+    @Valid
     private Set<GroupTaskWriteModel> tasks;
 
     public String getDescription() {

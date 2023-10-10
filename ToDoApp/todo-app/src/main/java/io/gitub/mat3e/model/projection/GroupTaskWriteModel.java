@@ -2,10 +2,12 @@ package io.gitub.mat3e.model.projection;
 
 import io.gitub.mat3e.model.Task;
 import io.gitub.mat3e.model.TaskGroup;
+import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
 public class GroupTaskWriteModel {
+    @NotBlank(message = "Task's description cannot be null!")
     private String description;
     private LocalDateTime deadline;
 

@@ -42,7 +42,7 @@ public class ProjectService {
                     var targetGroup = new GroupWriteModel();
                     targetGroup.setDescription(project.getDescription());
                     targetGroup.setTasks(
-                            project.getSteps().stream()
+                            (List<GroupTaskWriteModel>) project.getSteps().stream()
                                     .map(projectStep -> {
                                         var task = new GroupTaskWriteModel();
                                         task.setDescription(projectStep.getDescription());

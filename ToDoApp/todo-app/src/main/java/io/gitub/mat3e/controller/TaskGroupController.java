@@ -1,12 +1,11 @@
 package io.gitub.mat3e.controller;
 
 import io.gitub.mat3e.logic.TaskGroupService;
-import io.gitub.mat3e.model.Task;
-import io.gitub.mat3e.model.TaskGroup;
-import io.gitub.mat3e.model.TaskGroupRepository;
-import io.gitub.mat3e.model.TaskRepository;
+import io.gitub.mat3e.model.*;
 import io.gitub.mat3e.model.projection.GroupReadModel;
+import io.gitub.mat3e.model.projection.GroupTaskWriteModel;
 import io.gitub.mat3e.model.projection.GroupWriteModel;
+import io.gitub.mat3e.model.projection.ProjectWriteModel;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -15,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -45,14 +46,42 @@ public class TaskGroupController {
 //        logger.warn("Exposing all the Task Groups!");
 //        return service.findAllAsync().thenApply(ResponseEntity::ok);
 //    }
-    @ResponseStatus
+
+    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
+    String showGroups(Model model){
+        model.addAttribute("group",new GroupWriteModel());
+        return "groups";
+    }
+    @PostMapping(params = "addTask", produces = MediaType.TEXT_HTML_VALUE)
+    String addGroupTask(@ModelAttribute("group") GroupWriteModel current){
+        current.getTasks().add(new GroupTaskWriteModel());
+        return "groups";
+    }
+
+    @PostMapping(produces = MediaType.TEXT_HTML_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    String addGroup(
+            @ModelAttribute("group") @Valid GroupWriteModel current,
+            BindingResult bindingResult,
+            Model model
+    ){
+        if(bindingResult.hasErrors()){
+            return "groups";
+        }
+        service.createGroup(current);
+        model.addAttribute("group", new ProjectWriteModel());
+        model.addAttribute("group", getGroups());
+        model.addAttribute("message", "Group added!");
+        return "groups";
+    }
+
+    @ResponseBody
     @GetMapping(produces= MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<GroupReadModel>> readAllGroups(){
         logger.info("Exposing taskGroups");
         return  ResponseEntity.ok(service.readAll());
     }
     @ResponseBody
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<Task>> readAllTasksFromGroup(@PathVariable int id){
         return ResponseEntity.ok(repository.findAllByGroup_Id(id));
     }
@@ -72,6 +101,10 @@ public class TaskGroupController {
     @ExceptionHandler(IllegalStateException.class)
     ResponseEntity<String>handleIllegalState(IllegalStateException e){
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+    @ModelAttribute("groups")
+    public List<GroupReadModel> getGroups() {
+        return service.readAll();
     }
 
 }

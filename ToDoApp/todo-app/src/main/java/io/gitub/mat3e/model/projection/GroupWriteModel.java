@@ -4,7 +4,9 @@ import io.gitub.mat3e.model.Project;
 import io.gitub.mat3e.model.TaskGroup;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +15,17 @@ import java.util.stream.Collectors;
 public class GroupWriteModel {
  @NotBlank(message = "Task Group's description cannot be empty!")
     private String description;
+
+//    private LocalDateTime deadline;
+//
+//    public LocalDateTime getDeadline() {
+//        return deadline;
+//    }
+//
+//    public void setDeadLine(LocalDateTime deadline) {
+//        this.deadline = deadline;
+//    }
+
     @Valid
     private List<GroupTaskWriteModel> tasks = new ArrayList<>();
 
@@ -38,7 +51,8 @@ public class GroupWriteModel {
     public TaskGroup toGroup(final Project project){
         var result = new TaskGroup();
         result.setDescription(description);
-        result.setTasks(tasks.stream()
+        result.setTasks(
+                tasks.stream()
                 .map(source ->source.toTask(result))
                 .collect(Collectors.toSet())
         );

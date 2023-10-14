@@ -34,22 +34,25 @@ public class TaskGroupController {
         this.repository = repository;
         this.service = service;
     }
-    //methods
-    @ResponseBody
-    @PostMapping(produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<GroupReadModel> createGroup(@RequestBody @Valid GroupWriteModel toCreate){
-        GroupReadModel result = service.createGroup(toCreate);
-        return ResponseEntity.created(URI.create("/"+result.getId())).body(result);
-    }
-//    @GetMapping
-//    CompletableFuture<ResponseEntity<List<TaskGroup>>> readAllTaskGroups(){
-//        logger.warn("Exposing all the Task Groups!");
-//        return service.findAllAsync().thenApply(ResponseEntity::ok);
-//    }
 
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     String showGroups(Model model){
         model.addAttribute("group",new GroupWriteModel());
+        return "groups";
+    }
+    @PostMapping(produces = MediaType.TEXT_HTML_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    String addGroup(
+                    @ModelAttribute("group") @Valid GroupWriteModel current,
+                    BindingResult bindingResult,
+                    Model model
+            ){
+        if(bindingResult.hasErrors()){
+            return "groups";
+        }
+        service.createGroup(current);
+        model.addAttribute("group", new GroupWriteModel());
+        model.addAttribute("group", getGroups());
+        model.addAttribute("message", "Group added!");
         return "groups";
     }
     @PostMapping(params = "addTask", produces = MediaType.TEXT_HTML_VALUE)
@@ -57,21 +60,11 @@ public class TaskGroupController {
         current.getTasks().add(new GroupTaskWriteModel());
         return "groups";
     }
-
-    @PostMapping(produces = MediaType.TEXT_HTML_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    String addGroup(
-            @ModelAttribute("group") @Valid GroupWriteModel current,
-            BindingResult bindingResult,
-            Model model
-    ){
-        if(bindingResult.hasErrors()){
-            return "groups";
-        }
-        service.createGroup(current);
-        model.addAttribute("group", new ProjectWriteModel());
-        model.addAttribute("group", getGroups());
-        model.addAttribute("message", "Group added!");
-        return "groups";
+    @ResponseBody
+    @PostMapping(produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<GroupReadModel> createGroup(@RequestBody @Valid GroupWriteModel toCreate){
+        GroupReadModel result = service.createGroup(toCreate);
+        return ResponseEntity.created(URI.create("/"+result.getId())).body(result);
     }
 
     @ResponseBody
@@ -85,23 +78,15 @@ public class TaskGroupController {
     ResponseEntity<List<Task>> readAllTasksFromGroup(@PathVariable int id){
         return ResponseEntity.ok(repository.findAllByGroup_Id(id));
     }
-    @Transactional
     @ResponseBody
+    @Transactional
     @PatchMapping("/{id}")
-    public ResponseEntity<?> toggleTaskGroup(@PathVariable int id){
+    public ResponseEntity<?> toggleGroup(@PathVariable int id){
         service.toggleGroup(id);
                return ResponseEntity.noContent().build() ;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    ResponseEntity<String>handledIllegalArgument(IllegalArgumentException e){
-        return ResponseEntity.notFound().build();
-    }
 
-    @ExceptionHandler(IllegalStateException.class)
-    ResponseEntity<String>handleIllegalState(IllegalStateException e){
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
     @ModelAttribute("groups")
     public List<GroupReadModel> getGroups() {
         return service.readAll();

@@ -35,6 +35,13 @@ public class ProjectController {
         return "projects";
     }
 
+    @PostMapping(params="deleteStep")
+    String deleteProjectStep(@ModelAttribute("project") ProjectWriteModel current){
+        int last = current.getSteps().size()-1;
+        current.getSteps().remove(last);
+        return "projects";
+    }
+
     @PostMapping
     String addProject(
         @ModelAttribute("project") @Valid ProjectWriteModel current,

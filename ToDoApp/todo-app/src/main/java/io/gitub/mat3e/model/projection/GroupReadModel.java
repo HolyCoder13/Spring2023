@@ -13,7 +13,7 @@ public class GroupReadModel {
     private int id;
     private String description;
     //last task deaLine in group
-    private LocalDateTime deadLine;
+    public LocalDateTime deadline;
     private Set<GroupTaskReadModel> tasks;
 
     public GroupReadModel(TaskGroup source){
@@ -23,7 +23,7 @@ public class GroupReadModel {
                 .map(Task::getDeadline)
                 .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
-                .ifPresent(date -> deadLine = date);
+                .ifPresent(date -> deadline = date);
         tasks = source.getTasks().stream()
                 .map(GroupTaskReadModel::new).collect(Collectors.toSet());
     }
@@ -43,12 +43,12 @@ public class GroupReadModel {
         this.description = description;
     }
 
-    public LocalDateTime getDeadLine() {
-        return deadLine;
+    public LocalDateTime getDeadline() {
+        return deadline;
     }
 
     public void setDeadLine(LocalDateTime deadLine) {
-        this.deadLine = deadLine;
+        this.deadline = deadLine;
     }
 
     public Set<GroupTaskReadModel> getTasks() {

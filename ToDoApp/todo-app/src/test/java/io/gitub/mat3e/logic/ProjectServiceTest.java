@@ -104,7 +104,7 @@ class ProjectServiceTest {
         GroupReadModel result = toTest.createGroup(today, 1);
 
         assertThat(result.getDescription()).isEqualTo("bar");
-        assertThat(result.getDeadLine()).isEqualTo(today.minusDays(1));
+        assertThat(result.getDeadline()).isEqualTo(today.minusDays(1));
         assertThat(result.getTasks()).allMatch(task -> task.getDescription().equals("foo"));
         assertThat(countBeforeCall+1)
                 .isEqualTo(inMemoryGroupRepo.count());

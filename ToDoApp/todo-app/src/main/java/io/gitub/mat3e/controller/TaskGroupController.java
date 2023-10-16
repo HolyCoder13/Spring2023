@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
+@IllegalExceptionProcessing
 @RequestMapping("/groups")
 public class TaskGroupController {
     private final Logger logger = LoggerFactory.getLogger(TaskGroupController.class);

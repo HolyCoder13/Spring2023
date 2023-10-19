@@ -62,6 +62,16 @@ class ProjectController {
         current.getSteps().add(new ProjectStep());
         return "projects";
     }
+   // @Timed(value="project.create.group",histogram = true,percentiles = {0.5,0.95,0.99})
+    @PostMapping("/fake/{id}")
+    String createGroupFake(
+            @ModelAttribute("project") ProjectWriteModel current,
+            Model model,
+            @PathVariable int id,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime deadline
+    ) {
+        return createGroup(current,model,id,deadline);
+    }
     @Timed(value="project.create.group",histogram = true,percentiles = {0.5,0.95,0.99})
     @PostMapping("/{id}")
     String createGroup(

@@ -194,6 +194,12 @@ class ProjectServiceTest {
 
         }
 
+        @Override
+        public boolean existsByDescription(final String description){
+            return map.values().stream()
+                    .anyMatch(group->group.getDescription().equals(description));
+        }
+
 
     }
 }

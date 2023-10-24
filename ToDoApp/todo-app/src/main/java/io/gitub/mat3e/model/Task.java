@@ -1,5 +1,6 @@
 package io.gitub.mat3e.model;
 
+import io.gitub.mat3e.model.event.TaskEvent;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -58,6 +59,10 @@ public class Task {
     @Column(name="done")
     public boolean isDone(){
         return done;
+    }
+    public TaskEvent toggle(){
+        this.done = !this.done;
+        return TaskEvent.changed(this);
     }
 
     public void setDone(final boolean done){

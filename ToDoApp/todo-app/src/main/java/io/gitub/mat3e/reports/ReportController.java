@@ -1,6 +1,7 @@
 package io.gitub.mat3e.reports;
 
 import io.gitub.mat3e.model.Task;
+import io.gitub.mat3e.model.TaskDoneBeforeDeadline;
 import io.gitub.mat3e.model.TaskRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reports")
@@ -38,5 +44,25 @@ public class ReportController {
         done= task.isDone();
         changesCount=events.size();
         }
+    }
+
+    @GetMapping("/metDeadline")
+    public ResponseEntity<List<TaskDoneBeforeDeadline>> taskBeforeDeadline() {
+        List<TaskDoneBeforeDeadline> tasks = new ArrayList<>();
+        taskRepository.findAll().stream()
+                .filter(task ->{
+                    if(task.getDeadline()==null&&task.isDone())
+                        return true;
+                    Optional<PersistedTaskEvent> eventList = eventRepository.findByTaskId(task.getId()).stream()
+                            .filter(event->event.occurence.isBefore(task.getDeadline()))
+                            .max(Comparator.comparing(event->event.occurence));
+
+                    if(eventList.isPresent() && eventList.get().name.equals("TaskDoneEvent"))
+                    return true;
+                    return false;
+                }).forEach(task -> tasks.add(new TaskDoneBeforeDeadline(task)));
+            return ResponseEntity.ok(tasks);
+
+
     }
 }
